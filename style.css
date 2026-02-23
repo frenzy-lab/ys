@@ -16,11 +16,20 @@ body {
 
 :root {
   --pink: #ff5c9a;
+
   --gap: 110px;
   --contentShift: 40px;
+
+  /* Brand hover colors */
+  --x: #ffffff;
+  --yt: #ff0033;
+  --twitch: #9146ff;
+  --discord: #5865F2;
 }
 
-/* Diagonal line */
+/* =========================
+   DIAGONAL LINE
+========================= */
 .diagonal-line {
   position: fixed;
   width: 220%;
@@ -35,14 +44,18 @@ body {
 }
 .diagonal-line.visible { opacity: 0.85; }
 
-/* Fade */
+/* =========================
+   FADE
+========================= */
 .hidden { opacity: 0; }
 .show {
   opacity: 1;
   transition: opacity 1.2s ease;
 }
 
-/* Layout */
+/* =========================
+   LAYOUT
+========================= */
 .logo-area,
 .links-area {
   position: fixed;
@@ -61,7 +74,9 @@ body {
   transform: translate(-50%, calc(-50% + (var(--gap) / 2)));
 }
 
-/* Logo */
+/* =========================
+   LOGO
+========================= */
 .logo-wrapper {
   position: relative;
   display: inline-block;
@@ -71,7 +86,7 @@ body {
   width: min(520px, 75vw);
   display: block;
   height: auto;
-  filter: drop-shadow(0 40px 90px rgba(255,92,154,0.2));
+  filter: drop-shadow(0 40px 90px rgba(255,92,154,0.20));
 }
 
 .hover-slice {
@@ -85,13 +100,17 @@ body {
   pointer-events: none;
 }
 
-/* Mobile scaling */
+/* Make logo bigger on phones/tablets (same layout, scaled) */
 @media (max-width: 1024px) {
   .main-logo { width: 96vw; }
 }
 
-/* Buttons */
+/* =========================
+   BUTTONS (base)
+========================= */
 .btn {
+  --brand: var(--pink); /* default */
+  position: relative;
   display: block;
   margin: 14px auto;
   padding: 16px;
@@ -103,15 +122,126 @@ body {
   letter-spacing: 2px;
 
   border-radius: 6px;
-  transition: all 0.3s ease;
+
+  box-shadow:
+    0 10px 22px rgba(255,92,154,0.30),
+    inset 0 -4px 10px rgba(0,0,0,0.35);
+
+  transition: transform 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, filter 0.25s ease;
+  will-change: transform;
+  overflow: hidden; /* needed for glitch slices */
 }
 
-.btn:hover {
+/* brand mapping */
+.btn-x      { --brand: var(--x); }
+.btn-yt     { --brand: var(--yt); }
+.btn-twitch { --brand: var(--twitch); }
+.btn-discord{ --brand: var(--discord); }
+
+/* Soft glow behind active (hover/focus) */
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: -18px;
+  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--brand) 60%, transparent) 0%, transparent 60%);
+  opacity: 0;
+  filter: blur(10px);
+  transform: scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Subtle scanline shimmer */
+.btn::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to bottom,
+      rgba(255,255,255,0.0) 0%,
+      rgba(255,255,255,0.08) 45%,
+      rgba(255,255,255,0.0) 100%
+    );
+  opacity: 0;
+  transform: translateY(-120%);
+  transition: opacity 0.2s ease;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Keep text above effects */
+.btn {
+  z-index: 1;
+}
+.btn > * { position: relative; z-index: 2; }
+
+/* Hover / focus state: brand color + glow + subtle lift */
+.btn:hover,
+.btn:focus-visible {
   color: white;
   transform: translateY(-3px);
+  box-shadow:
+    0 18px 38px color-mix(in srgb, var(--brand) 35%, rgba(0,0,0,0.65)),
+    0 0 26px color-mix(in srgb, var(--brand) 45%, transparent),
+    inset 0 -4px 12px rgba(0,0,0,0.45);
 }
 
-/* Canvas */
+.btn:hover::before,
+.btn:focus-visible::before {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.btn:hover::after,
+.btn:focus-visible::after {
+  opacity: 0.9;
+  animation: btnScan 0.55s ease-out 1;
+}
+
+/* Brand “wash” on hover (without changing the base pink fill too aggressively) */
+.btn:hover {
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--brand) 55%, transparent));
+}
+
+/* Subtle hover glitch: tiny horizontal jitter + micro slice flicker */
+.btn:hover {
+  animation: btnJitter 0.26s steps(2, end) infinite;
+}
+
+.btn:hover .btn-glitch-slice { display: block; }
+
+/* Optional: reduce motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover { animation: none; }
+  .btn:hover::after { animation: none; }
+}
+
+/* Glitch animation keyframes */
+@keyframes btnJitter {
+  0%   { transform: translateY(-3px) translateX(0); }
+  25%  { transform: translateY(-3px) translateX(0.6px); }
+  50%  { transform: translateY(-3px) translateX(-0.6px); }
+  75%  { transform: translateY(-3px) translateX(0.4px); }
+  100% { transform: translateY(-3px) translateX(0); }
+}
+
+@keyframes btnScan {
+  0%   { transform: translateY(-120%); }
+  100% { transform: translateY(160%); }
+}
+
+/* Mobile: keep same look, scale width naturally */
+@media (max-width: 1024px) {
+  .btn {
+    width: min(320px, 82vw);
+  }
+}
+
+/* =========================
+   CANVAS
+========================= */
 canvas {
   position: fixed;
   inset: 0;

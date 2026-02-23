@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>frenzy.</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="diagonal-line" id="diagLine"></div>
+  <canvas id="particles"></canvas>
+
+  <!-- LOGO -->
+  <div class="logo-area hidden" id="logoArea">
+    <div class="logo-wrapper">
+      <img
+        src="images/frenzy-logo.png"
+        class="main-logo"
+        alt=""
+        draggable="false"
+      />
+      <div class="hover-slice"></div>
+    </div>
+  </div>
+
+  <!-- LINKS -->
+  <div class="links-area hidden" id="linksArea">
+    <section class="links">
+
+      <!-- X -->
+      <a class="btn"
+         href="twitter://user?screen_name=yourhandle"
+         onclick="setTimeout(() => { window.location.href='https://x.com/yourhandle'; }, 500);">
+         X
+      </a>
+
+      <!-- YouTube -->
+      <a class="btn"
+         href="vnd.youtube://www.youtube.com/@yourchannel"
+         onclick="setTimeout(() => { window.location.href='https://www.youtube.com/@yourchannel'; }, 500);">
+         YOUTUBE
+      </a>
+
+      <!-- Twitch -->
+      <a class="btn"
+         href="twitch://stream/yourchannel"
+         onclick="setTimeout(() => { window.location.href='https://www.twitch.tv/yourchannel'; }, 500);">
+         TWITCH
+      </a>
+
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body { cursor: none; }
+}
+
+body {
+  background: #0a0a0a;
+  overflow: hidden;
+  font-family: 'Orbitron', sans-serif;
+}
+
+:root {
+  --pink: #ff5c9a;
+  --gap: 110px;
+  --contentShift: 40px;
+}
+
+/* Diagonal line */
+.diagonal-line {
+  position: fixed;
+  width: 220%;
+  height: 2px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%) rotate(-45deg);
+  background: var(--pink);
+  opacity: 0;
+  z-index: 1;
+  transition: opacity 1.5s ease;
+}
+.diagonal-line.visible { opacity: 0.85; }
+
+/* Fade */
+.hidden { opacity: 0; }
+.show {
+  opacity: 1;
+  transition: opacity 1.2s ease;
+}
+
+/* Layout */
+.logo-area,
+.links-area {
+  position: fixed;
+  left: 50%;
+  top: calc(50% + var(--contentShift));
+  transform: translate(-50%, -50%);
+  text-align: center;
+  z-index: 3;
+}
+
+.logo-area {
+  transform: translate(calc(-50% + 15px), calc(-50% - var(--gap)));
+}
+
+.links-area {
+  transform: translate(-50%, calc(-50% + (var(--gap) / 2)));
+}
+
+/* Logo */
+.logo-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.main-logo {
+  width: min(520px, 75vw);
+  display: block;
+  height: auto;
+  filter: drop-shadow(0 40px 90px rgba(255,92,154,0.2));
+}
+
+.hover-slice {
+  position: absolute;
+  inset: 0;
+  background-image: url("images/frenzy-logo.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Mobile scaling */
+@media (max-width: 1024px) {
+  .main-logo { width: 96vw; }
+}
+
+/* Buttons */
+.btn {
+  display: block;
+  margin: 14px auto;
+  padding: 16px;
+  width: 260px;
+
+  background: var(--pink);
+  color: black;
+  text-decoration: none;
+  letter-spacing: 2px;
+
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  color: white;
+  transform: translateY(-3px);
+}
+
+/* Canvas */
+canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}

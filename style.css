@@ -4,6 +4,7 @@
   box-sizing: border-box;
 }
 
+/* Hide cursor only where it exists (desktop/mouse) */
 @media (hover: hover) and (pointer: fine) {
   body { cursor: none; }
 }
@@ -14,10 +15,14 @@ body {
   font-family: 'Orbitron', sans-serif;
 }
 
+/* =========================
+   THEME + LAYOUT
+========================= */
 :root {
   --pink: #ff5c9a;
 
-  --gap: 110px;
+  /* ✅ increased distance between logo and first button */
+  --gap: 135px;
   --contentShift: 40px;
 
   /* Brand hover colors */
@@ -28,7 +33,7 @@ body {
 }
 
 /* =========================
-   DIAGONAL LINE
+   DIAGONAL LINE (/)
 ========================= */
 .diagonal-line {
   position: fixed;
@@ -45,7 +50,7 @@ body {
 .diagonal-line.visible { opacity: 0.85; }
 
 /* =========================
-   FADE
+   FADE IN
 ========================= */
 .hidden { opacity: 0; }
 .show {
@@ -66,10 +71,12 @@ body {
   z-index: 3;
 }
 
+/* Logo above line (+15px right nudge kept) */
 .logo-area {
   transform: translate(calc(-50% + 15px), calc(-50% - var(--gap)));
 }
 
+/* Buttons below line (halfway toward title, as before) */
 .links-area {
   transform: translate(-50%, calc(-50% + (var(--gap) / 2)));
 }
@@ -89,6 +96,7 @@ body {
   filter: drop-shadow(0 40px 90px rgba(255,92,154,0.20));
 }
 
+/* Glitch layer uses the same file */
 .hover-slice {
   position: absolute;
   inset: 0;
@@ -100,7 +108,7 @@ body {
   pointer-events: none;
 }
 
-/* Make logo bigger on phones/tablets (same layout, scaled) */
+/* Make logo bigger on phones/tablets (same design, scaled) */
 @media (max-width: 1024px) {
   .main-logo { width: 96vw; }
 }
@@ -109,7 +117,7 @@ body {
    BUTTONS (base)
 ========================= */
 .btn {
-  --brand: var(--pink); /* default */
+  --brand: var(--pink); /* default brand */
   position: relative;
   display: block;
   margin: 14px auto;
@@ -122,6 +130,7 @@ body {
   letter-spacing: 2px;
 
   border-radius: 6px;
+  overflow: hidden;
 
   box-shadow:
     0 10px 22px rgba(255,92,154,0.30),
@@ -129,14 +138,13 @@ body {
 
   transition: transform 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, filter 0.25s ease;
   will-change: transform;
-  overflow: hidden; /* needed for glitch slices */
 }
 
-/* brand mapping */
-.btn-x      { --brand: var(--x); }
-.btn-yt     { --brand: var(--yt); }
-.btn-twitch { --brand: var(--twitch); }
-.btn-discord{ --brand: var(--discord); }
+/* Brand mapping */
+.btn-x       { --brand: var(--x); }
+.btn-yt      { --brand: var(--yt); }
+.btn-twitch  { --brand: var(--twitch); }
+.btn-discord { --brand: var(--discord); }
 
 /* Soft glow behind active (hover/focus) */
 .btn::before {
@@ -152,7 +160,7 @@ body {
   pointer-events: none;
 }
 
-/* Subtle scanline shimmer */
+/* Scanline shimmer */
 .btn::after {
   content: "";
   position: absolute;
@@ -161,7 +169,7 @@ body {
     linear-gradient(
       to bottom,
       rgba(255,255,255,0.0) 0%,
-      rgba(255,255,255,0.08) 45%,
+      rgba(255,255,255,0.10) 45%,
       rgba(255,255,255,0.0) 100%
     );
   opacity: 0;
@@ -171,13 +179,7 @@ body {
   pointer-events: none;
 }
 
-/* Keep text above effects */
-.btn {
-  z-index: 1;
-}
-.btn > * { position: relative; z-index: 2; }
-
-/* Hover / focus state: brand color + glow + subtle lift */
+/* Hover/focus: brand aura + subtle lift */
 .btn:hover,
 .btn:focus-visible {
   color: white;
@@ -186,6 +188,7 @@ body {
     0 18px 38px color-mix(in srgb, var(--brand) 35%, rgba(0,0,0,0.65)),
     0 0 26px color-mix(in srgb, var(--brand) 45%, transparent),
     inset 0 -4px 12px rgba(0,0,0,0.45);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--brand) 55%, transparent));
 }
 
 .btn:hover::before,
@@ -200,19 +203,12 @@ body {
   animation: btnScan 0.55s ease-out 1;
 }
 
-/* Brand “wash” on hover (without changing the base pink fill too aggressively) */
-.btn:hover {
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--brand) 55%, transparent));
-}
-
-/* Subtle hover glitch: tiny horizontal jitter + micro slice flicker */
+/* Subtle hover glitch jitter */
 .btn:hover {
   animation: btnJitter 0.26s steps(2, end) infinite;
 }
 
-.btn:hover .btn-glitch-slice { display: block; }
-
-/* Optional: reduce motion preference */
+/* Reduce motion preference */
 @media (prefers-reduced-motion: reduce) {
   .btn:hover { animation: none; }
   .btn:hover::after { animation: none; }
@@ -221,9 +217,9 @@ body {
 /* Glitch animation keyframes */
 @keyframes btnJitter {
   0%   { transform: translateY(-3px) translateX(0); }
-  25%  { transform: translateY(-3px) translateX(0.6px); }
-  50%  { transform: translateY(-3px) translateX(-0.6px); }
-  75%  { transform: translateY(-3px) translateX(0.4px); }
+  25%  { transform: translateY(-3px) translateX(0.7px); }
+  50%  { transform: translateY(-3px) translateX(-0.7px); }
+  75%  { transform: translateY(-3px) translateX(0.45px); }
   100% { transform: translateY(-3px) translateX(0); }
 }
 
@@ -240,7 +236,7 @@ body {
 }
 
 /* =========================
-   CANVAS
+   CANVAS (never block clicks/taps)
 ========================= */
 canvas {
   position: fixed;

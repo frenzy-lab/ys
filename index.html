@@ -10,7 +10,10 @@
 </head>
 <body>
 
+  <!-- Diagonal Line -->
   <div class="diagonal-line" id="diagLine"></div>
+
+  <!-- Cursor canvas -->
   <canvas id="particles"></canvas>
 
   <!-- LOGO -->
@@ -19,6 +22,7 @@
       <img
         src="images/frenzy-logo.png"
         class="main-logo"
+        id="mainLogo"
         alt=""
         draggable="false"
       />
@@ -51,7 +55,7 @@
          TWITCH
       </a>
 
-      <!-- Discord -->
+      <!-- Discord (last) -->
       <a class="btn btn-discord"
          href="discord://invite/cEDsAM27fR"
          onclick="setTimeout(() => { window.location.href='https://discord.gg/cEDsAM27fR'; }, 500);">

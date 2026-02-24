@@ -21,19 +21,25 @@ body {
 :root {
   --pink: #ff5c9a;
 
-  /* ✅ increased distance between logo and first button */
+  /* spacing between logo ↔ buttons stays as you set it */
   --gap: 135px;
   --contentShift: 40px;
+
+  /* desktop nudge */
+  --logoNudgeX: 15px;
 
   /* Brand hover colors */
   --x: #ffffff;
   --yt: #ff0033;
   --twitch: #9146ff;
   --discord: #5865F2;
+
+  /* NEW: scale whole composition (desktop = normal) */
+  --uiScale: 1;
 }
 
 /* =========================
-   DIAGONAL LINE (/)
+   DIAGONAL LINE
 ========================= */
 .diagonal-line {
   position: fixed;
@@ -47,7 +53,7 @@ body {
   z-index: 1;
   transition: opacity 1.5s ease;
 }
-.diagonal-line.visible { opacity: 0.85; }
+.diagonal-line.visible { opacity: 0.92; }
 
 /* =========================
    FADE IN
@@ -66,19 +72,21 @@ body {
   position: fixed;
   left: 50%;
   top: calc(50% + var(--contentShift));
-  transform: translate(-50%, -50%);
   text-align: center;
   z-index: 3;
+
+  /* scale the whole composition (zoom out on mobile) */
+  transform-origin: center;
 }
 
-/* Logo above line (+15px right nudge kept) */
+/* Logo above line */
 .logo-area {
-  transform: translate(calc(-50%), calc(-50% - var(--gap)));
+  transform: translate(calc(-50% + var(--logoNudgeX)), calc(-50% - var(--gap))) scale(var(--uiScale));
 }
 
-/* Buttons below line (halfway toward title, as before) */
+/* Buttons below line */
 .links-area {
-  transform: translate(-50%, calc(-50% + (var(--gap) / 2)));
+  transform: translate(-50%, calc(-50% + (var(--gap) / 2))) scale(var(--uiScale));
 }
 
 /* =========================
@@ -96,7 +104,7 @@ body {
   filter: drop-shadow(0 40px 90px rgba(255,92,154,0.20));
 }
 
-/* Glitch layer uses the same file */
+/* Glitch layer uses same file */
 .hover-slice {
   position: absolute;
   inset: 0;
@@ -108,16 +116,11 @@ body {
   pointer-events: none;
 }
 
-/* Make logo bigger on phones/tablets (same design, scaled) */
-@media (max-width: 1024px) {
-  .main-logo { width: 96vw; }
-}
-
 /* =========================
-   BUTTONS (base)
+   BUTTONS (brand hover + glow + subtle jitter)
 ========================= */
 .btn {
-  --brand: var(--pink); /* default brand */
+  --brand: var(--pink);
   position: relative;
   display: block;
   margin: 14px auto;
@@ -146,7 +149,6 @@ body {
 .btn-twitch  { --brand: var(--twitch); }
 .btn-discord { --brand: var(--discord); }
 
-/* Soft glow behind active (hover/focus) */
 .btn::before {
   content: "";
   position: absolute;
@@ -160,7 +162,6 @@ body {
   pointer-events: none;
 }
 
-/* Scanline shimmer */
 .btn::after {
   content: "";
   position: absolute;
@@ -179,7 +180,6 @@ body {
   pointer-events: none;
 }
 
-/* Hover/focus: brand aura + subtle lift */
 .btn:hover,
 .btn:focus-visible {
   color: white;
@@ -203,18 +203,15 @@ body {
   animation: btnScan 0.55s ease-out 1;
 }
 
-/* Subtle hover glitch jitter */
 .btn:hover {
   animation: btnJitter 0.26s steps(2, end) infinite;
 }
 
-/* Reduce motion preference */
 @media (prefers-reduced-motion: reduce) {
   .btn:hover { animation: none; }
   .btn:hover::after { animation: none; }
 }
 
-/* Glitch animation keyframes */
 @keyframes btnJitter {
   0%   { transform: translateY(-3px) translateX(0); }
   25%  { transform: translateY(-3px) translateX(0.7px); }
@@ -228,19 +225,28 @@ body {
   100% { transform: translateY(160%); }
 }
 
-/* Mobile: keep same look, scale width naturally */
-@media (max-width: 1024px) {
-  .btn {
-    width: min(320px, 82vw);
-  }
-}
-
 /* =========================
-   CANVAS (never block clicks/taps)
+   CANVAS
 ========================= */
 canvas {
   position: fixed;
   inset: 0;
   z-index: 2;
   pointer-events: none;
+}
+
+/* =========================
+   MOBILE: center logo + zoom out composition
+========================= */
+@media (max-width: 1024px) {
+  :root {
+    --logoNudgeX: 0px; /* ✅ centered on mobile */
+    --uiScale: 0.90;   /* ✅ zoom out view a bit */
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --uiScale: 0.86;   /* slightly more zoom out on tiny phones */
+  }
 }

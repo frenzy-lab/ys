@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================
-// PERMANENT LOGO GLITCH
+// PERMANENT LOGO GLITCH (unchanged from your original)
 // =========================
 const hoverSlice = document.querySelector(".hover-slice");
 
@@ -35,7 +35,8 @@ setInterval(() => {
 }, 140);
 
 // =========================
-// TRIANGLE CURSOR TRACE (pink / white / black)
+// TRIANGLE CURSOR TRACE (MORE GLITCHY)
+// pink / white / black + jitter bursts
 // =========================
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d", { alpha: true });
@@ -59,17 +60,49 @@ document.addEventListener("mousemove", (e) => {
   lastX = e.clientX;
   lastY = e.clientY;
 
+  // base triangle
   trail.push({
     x: e.clientX,
     y: e.clientY,
     alpha: 1,
     size: 14,
-    angle
+    angle,
+    jitter: 0
   });
+
+  // glitch burst: sometimes spawn extra triangles around pointer
+  if (Math.random() > 0.72) {
+    const burstCount = 1 + Math.floor(Math.random() * 3); // 1-3 extras
+    for (let i = 0; i < burstCount; i++) {
+      trail.push({
+        x: e.clientX + (Math.random() - 0.5) * 18,
+        y: e.clientY + (Math.random() - 0.5) * 18,
+        alpha: 0.9,
+        size: 10 + Math.random() * 10,
+        angle: angle + (Math.random() - 0.5) * 0.9,
+        jitter: 1
+      });
+    }
+  }
 });
 
-function drawTriangle(x, y, size, alpha, angle) {
+function pickColor() {
+  // Mostly pink, sometimes white, rarely black
+  const r = Math.random();
+  if (r > 0.92) return "black";
+  if (r > 0.75) return "white";
+  return "#ff5c9a";
+}
+
+function drawTriangle(x, y, size, alpha, angle, jitter) {
   ctx.save();
+
+  // jitter gives a tiny screen-tear feel
+  if (jitter) {
+    x += (Math.random() - 0.5) * 4;
+    y += (Math.random() - 0.5) * 4;
+  }
+
   ctx.translate(x, y);
   ctx.rotate(angle);
   ctx.globalAlpha = alpha;
@@ -80,14 +113,9 @@ function drawTriangle(x, y, size, alpha, angle) {
   ctx.lineTo(-size, -size / 1.6);
   ctx.closePath();
 
-  // Random color: mostly pink, sometimes white, rarely black
-  let color = "#ff5c9a";
-  const r = Math.random();
-  if (r > 0.78) color = "white";
-  if (r > 0.92) color = "black";
-
-  ctx.fillStyle = color;
+  ctx.fillStyle = pickColor();
   ctx.fill();
+
   ctx.restore();
 }
 
@@ -97,10 +125,14 @@ function animate() {
   for (let i = 0; i < trail.length; i++) {
     const t = trail[i];
 
-    drawTriangle(t.x, t.y, t.size, t.alpha, t.angle);
+    drawTriangle(t.x, t.y, t.size, t.alpha, t.angle, t.jitter);
 
-    t.alpha -= 0.05;
+    // fade + shrink
+    t.alpha -= 0.055;
     t.size *= 0.95;
+
+    // occasional micro “flicker” (glitchy)
+    if (Math.random() > 0.92) t.alpha -= 0.06;
 
     if (t.alpha <= 0) {
       trail.splice(i, 1);

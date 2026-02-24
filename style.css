@@ -4,7 +4,7 @@
   box-sizing: border-box;
 }
 
-/* Hide cursor only where it exists (desktop/mouse) */
+/* Hide cursor only on desktop */
 @media (hover: hover) and (pointer: fine) {
   body { cursor: none; }
 }
@@ -16,26 +16,25 @@ body {
 }
 
 /* =========================
-   THEME + LAYOUT
+   ROOT VARIABLES
 ========================= */
 :root {
   --pink: #ff5c9a;
 
-  /* spacing between logo ↔ buttons stays as you set it */
   --gap: 135px;
   --contentShift: 40px;
 
-  /* desktop nudge */
+  /* Desktop logo position */
   --logoNudgeX: 15px;
+
+  /* Zoom scaling */
+  --uiScale: 1;
 
   /* Brand hover colors */
   --x: #ffffff;
   --yt: #ff0033;
   --twitch: #9146ff;
   --discord: #5865F2;
-
-  /* NEW: scale whole composition (desktop = normal) */
-  --uiScale: 1;
 }
 
 /* =========================
@@ -53,12 +52,16 @@ body {
   z-index: 1;
   transition: opacity 1.5s ease;
 }
-.diagonal-line.visible { opacity: 0.92; }
+
+.diagonal-line.visible {
+  opacity: 0.92;
+}
 
 /* =========================
-   FADE IN
+   FADE
 ========================= */
 .hidden { opacity: 0; }
+
 .show {
   opacity: 1;
   transition: opacity 1.2s ease;
@@ -74,19 +77,23 @@ body {
   top: calc(50% + var(--contentShift));
   text-align: center;
   z-index: 3;
-
-  /* scale the whole composition (zoom out on mobile) */
   transform-origin: center;
 }
 
 /* Logo above line */
 .logo-area {
-  transform: translate(calc(-50% + var(--logoNudgeX)), calc(-50% - var(--gap))) scale(var(--uiScale));
+  transform: translate(
+    calc(-50% + var(--logoNudgeX)),
+    calc(-50% - var(--gap))
+  ) scale(var(--uiScale));
 }
 
 /* Buttons below line */
 .links-area {
-  transform: translate(-50%, calc(-50% + (var(--gap) / 2))) scale(var(--uiScale));
+  transform: translate(
+    -50%,
+    calc(-50% + (var(--gap) / 2))
+  ) scale(var(--uiScale));
 }
 
 /* =========================
@@ -99,12 +106,11 @@ body {
 
 .main-logo {
   width: min(520px, 75vw);
-  display: block;
   height: auto;
+  display: block;
   filter: drop-shadow(0 40px 90px rgba(255,92,154,0.20));
 }
 
-/* Glitch layer uses same file */
 .hover-slice {
   position: absolute;
   inset: 0;
@@ -117,7 +123,7 @@ body {
 }
 
 /* =========================
-   BUTTONS (brand hover + glow + subtle jitter)
+   BUTTONS
 ========================= */
 .btn {
   --brand: var(--pink);
@@ -139,8 +145,10 @@ body {
     0 10px 22px rgba(255,92,154,0.30),
     inset 0 -4px 10px rgba(0,0,0,0.35);
 
-  transition: transform 0.25s ease, box-shadow 0.25s ease, color 0.25s ease, filter 0.25s ease;
-  will-change: transform;
+  transition: transform 0.25s ease,
+              box-shadow 0.25s ease,
+              color 0.25s ease,
+              filter 0.25s ease;
 }
 
 /* Brand mapping */
@@ -149,35 +157,33 @@ body {
 .btn-twitch  { --brand: var(--twitch); }
 .btn-discord { --brand: var(--discord); }
 
+/* Glow */
 .btn::before {
   content: "";
   position: absolute;
   inset: -18px;
-  background: radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--brand) 60%, transparent) 0%, transparent 60%);
+  background: radial-gradient(circle at center,
+              color-mix(in srgb, var(--brand) 60%, transparent) 0%,
+              transparent 60%);
   opacity: 0;
   filter: blur(10px);
   transform: scale(0.98);
   transition: opacity 0.25s ease, transform 0.25s ease;
   z-index: 0;
-  pointer-events: none;
 }
 
 .btn::after {
   content: "";
   position: absolute;
   inset: 0;
-  background:
-    linear-gradient(
-      to bottom,
-      rgba(255,255,255,0.0) 0%,
-      rgba(255,255,255,0.10) 45%,
-      rgba(255,255,255,0.0) 100%
-    );
+  background: linear-gradient(
+              to bottom,
+              rgba(255,255,255,0) 0%,
+              rgba(255,255,255,0.1) 50%,
+              rgba(255,255,255,0) 100%);
   opacity: 0;
   transform: translateY(-120%);
   transition: opacity 0.2s ease;
-  z-index: 0;
-  pointer-events: none;
 }
 
 .btn:hover,
@@ -188,7 +194,6 @@ body {
     0 18px 38px color-mix(in srgb, var(--brand) 35%, rgba(0,0,0,0.65)),
     0 0 26px color-mix(in srgb, var(--brand) 45%, transparent),
     inset 0 -4px 12px rgba(0,0,0,0.45);
-  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--brand) 55%, transparent));
 }
 
 .btn:hover::before,
@@ -201,23 +206,6 @@ body {
 .btn:focus-visible::after {
   opacity: 0.9;
   animation: btnScan 0.55s ease-out 1;
-}
-
-.btn:hover {
-  animation: btnJitter 0.26s steps(2, end) infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .btn:hover { animation: none; }
-  .btn:hover::after { animation: none; }
-}
-
-@keyframes btnJitter {
-  0%   { transform: translateY(-3px) translateX(0); }
-  25%  { transform: translateY(-3px) translateX(0.7px); }
-  50%  { transform: translateY(-3px) translateX(-0.7px); }
-  75%  { transform: translateY(-3px) translateX(0.45px); }
-  100% { transform: translateY(-3px) translateX(0); }
 }
 
 @keyframes btnScan {
@@ -236,17 +224,17 @@ canvas {
 }
 
 /* =========================
-   MOBILE: center logo + zoom out composition
+   MOBILE ADJUSTMENTS
 ========================= */
 @media (max-width: 1024px) {
   :root {
-    --logoNudgeX: 0px; /* ✅ centered on mobile */
-    --uiScale: 0.90;   /* ✅ zoom out view a bit */
+    --logoNudgeX: 5px;   /* ← moved 5px right */
+    --uiScale: 0.90;     /* zoomed out view */
   }
 }
 
 @media (max-width: 420px) {
   :root {
-    --uiScale: 0.86;   /* slightly more zoom out on tiny phones */
+    --uiScale: 0.86;
   }
 }

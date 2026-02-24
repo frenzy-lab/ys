@@ -4,15 +4,21 @@
   box-sizing: border-box;
 }
 
-/* Hide cursor only on desktop */
+/* Hide cursor only on desktop pointer devices */
 @media (hover: hover) and (pointer: fine) {
   body { cursor: none; }
 }
 
 body {
   background: #0a0a0a;
-  overflow: hidden;
+  color: white;
   font-family: 'Orbitron', sans-serif;
+
+  /* Desktop stays locked */
+  overflow: hidden;
+
+  /* iOS smoother scrolling when enabled on mobile */
+  -webkit-overflow-scrolling: touch;
 }
 
 /* =========================
@@ -24,7 +30,7 @@ body {
   --gap: 135px;
   --contentShift: 40px;
 
-  /* Desktop logo position */
+  /* Desktop logo position (as requested) */
   --logoNudgeX: 15px;
 
   /* Zoom scaling */
@@ -53,9 +59,7 @@ body {
   transition: opacity 1.5s ease;
 }
 
-.diagonal-line.visible {
-  opacity: 0.92;
-}
+.diagonal-line.visible { opacity: 0.92; }
 
 /* =========================
    FADE
@@ -170,6 +174,7 @@ body {
   transform: scale(0.98);
   transition: opacity 0.25s ease, transform 0.25s ease;
   z-index: 0;
+  pointer-events: none;
 }
 
 .btn::after {
@@ -184,6 +189,8 @@ body {
   opacity: 0;
   transform: translateY(-120%);
   transition: opacity 0.2s ease;
+  z-index: 0;
+  pointer-events: none;
 }
 
 .btn:hover,
@@ -194,6 +201,7 @@ body {
     0 18px 38px color-mix(in srgb, var(--brand) 35%, rgba(0,0,0,0.65)),
     0 0 26px color-mix(in srgb, var(--brand) 45%, transparent),
     inset 0 -4px 12px rgba(0,0,0,0.45);
+  filter: drop-shadow(0 0 10px color-mix(in srgb, var(--brand) 55%, transparent));
 }
 
 .btn:hover::before,
@@ -206,6 +214,23 @@ body {
 .btn:focus-visible::after {
   opacity: 0.9;
   animation: btnScan 0.55s ease-out 1;
+}
+
+.btn:hover {
+  animation: btnJitter 0.26s steps(2, end) infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover { animation: none; }
+  .btn:hover::after { animation: none; }
+}
+
+@keyframes btnJitter {
+  0%   { transform: translateY(-3px) translateX(0); }
+  25%  { transform: translateY(-3px) translateX(0.7px); }
+  50%  { transform: translateY(-3px) translateX(-0.7px); }
+  75%  { transform: translateY(-3px) translateX(0.45px); }
+  100% { transform: translateY(-3px) translateX(0); }
 }
 
 @keyframes btnScan {
@@ -224,12 +249,27 @@ canvas {
 }
 
 /* =========================
-   MOBILE ADJUSTMENTS
+   MOBILE / TABLET
+   - allow scrolling if needed
+   - nudge logo +10px
+   - zoomed-out view
 ========================= */
 @media (max-width: 1024px) {
   :root {
-    --logoNudgeX: 5px;   /* ← moved 5px right */
-    --uiScale: 0.90;     /* zoomed out view */
+    --logoNudgeX: 10px; /* ✅ +10px on mobile */
+    --uiScale: 0.90;    /* zoom out */
+  }
+
+  /* Allow page to scroll if needed */
+  body {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* Use absolute positioning for content blocks so scroll can reveal them */
+  .logo-area,
+  .links-area {
+    position: absolute;
   }
 }
 

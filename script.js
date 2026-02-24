@@ -16,7 +16,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 // =========================
-// PERMANENT LOGO GLITCH (unchanged from your original)
+// PERMANENT LOGO GLITCH (unchanged)
 // =========================
 const hoverSlice = document.querySelector(".hover-slice");
 
@@ -35,8 +35,7 @@ setInterval(() => {
 }, 140);
 
 // =========================
-// TRIANGLE CURSOR TRACE (MORE GLITCHY)
-// pink / white / black + jitter bursts
+// TRIANGLE TRACER (mouse + touch + pen + many touchpads)
 // =========================
 const canvas = document.getElementById("particles");
 const ctx = canvas.getContext("2d", { alpha: true });
@@ -52,31 +51,32 @@ let trail = [];
 let lastX = 0;
 let lastY = 0;
 
-document.addEventListener("mousemove", (e) => {
-  const dx = e.clientX - lastX;
-  const dy = e.clientY - lastY;
-  const angle = Math.atan2(dy, dx);
+function pushPoint(x, y) {
+  const dx = x - lastX;
+  const dy = y - lastY;
 
-  lastX = e.clientX;
-  lastY = e.clientY;
+  // If it's the first point or very small delta, still allow
+  const angle = Math.atan2(dy || 0.0001, dx || 0.0001);
 
-  // base triangle
+  lastX = x;
+  lastY = y;
+
   trail.push({
-    x: e.clientX,
-    y: e.clientY,
+    x,
+    y,
     alpha: 1,
     size: 14,
     angle,
     jitter: 0
   });
 
-  // glitch burst: sometimes spawn extra triangles around pointer
+  // glitch burst triangles around pointer
   if (Math.random() > 0.72) {
-    const burstCount = 1 + Math.floor(Math.random() * 3); // 1-3 extras
+    const burstCount = 1 + Math.floor(Math.random() * 3);
     for (let i = 0; i < burstCount; i++) {
       trail.push({
-        x: e.clientX + (Math.random() - 0.5) * 18,
-        y: e.clientY + (Math.random() - 0.5) * 18,
+        x: x + (Math.random() - 0.5) * 18,
+        y: y + (Math.random() - 0.5) * 18,
         alpha: 0.9,
         size: 10 + Math.random() * 10,
         angle: angle + (Math.random() - 0.5) * 0.9,
@@ -84,10 +84,9 @@ document.addEventListener("mousemove", (e) => {
       });
     }
   }
-});
+}
 
 function pickColor() {
-  // Mostly pink, sometimes white, rarely black
   const r = Math.random();
   if (r > 0.92) return "black";
   if (r > 0.75) return "white";
@@ -97,7 +96,6 @@ function pickColor() {
 function drawTriangle(x, y, size, alpha, angle, jitter) {
   ctx.save();
 
-  // jitter gives a tiny screen-tear feel
   if (jitter) {
     x += (Math.random() - 0.5) * 4;
     y += (Math.random() - 0.5) * 4;
@@ -115,7 +113,6 @@ function drawTriangle(x, y, size, alpha, angle, jitter) {
 
   ctx.fillStyle = pickColor();
   ctx.fill();
-
   ctx.restore();
 }
 
@@ -127,11 +124,9 @@ function animate() {
 
     drawTriangle(t.x, t.y, t.size, t.alpha, t.angle, t.jitter);
 
-    // fade + shrink
     t.alpha -= 0.055;
     t.size *= 0.95;
 
-    // occasional micro “flicker” (glitchy)
     if (Math.random() > 0.92) t.alpha -= 0.06;
 
     if (t.alpha <= 0) {
@@ -142,5 +137,17 @@ function animate() {
 
   requestAnimationFrame(animate);
 }
-
 animate();
+
+/* Best universal input: Pointer Events */
+window.addEventListener("pointermove", (e) => {
+  // If the browser is sending pointer events, this covers mouse + touch + pen.
+  pushPoint(e.clientX, e.clientY);
+}, { passive: true });
+
+/* Fallback for older iOS Safari */
+window.addEventListener("touchmove", (e) => {
+  if (!e.touches || e.touches.length === 0) return;
+  const t = e.touches[0];
+  pushPoint(t.clientX, t.clientY);
+}, { passive: true });
